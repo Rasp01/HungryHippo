@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Recipe Website</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="recipe-ribbon">
+    <h2>Categories</h2>
+    <ul id="recipe-list">
+      {% for category in recipe_categories %}
+        <li>
+          <h3>{{ category.name }}</h3>
+          <ul>
+            {% for recipe in category.recipes %}
+              <li><a href="{{ recipe.url }}" data-recipe-url="{{ recipe.url }}">{{ recipe.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="recipe-content">
+    <h1>My Recipe Website</h1>
+    <iframe id="recipe-frame" src="" frameborder="0"></iframe>
+  </div>
+
+  <script>
+    const recipeList = document.getElementById('recipe-list');
+    const recipeFrame = document.getElementById('recipe-frame');
+
+    recipeList.addEventListener('click', (event) => {
+      const clickedLink = event.target.closest('a');
+      if (clickedLink) {
+        const recipeUrl = clickedLink.dataset.recipeUrl;
+        recipeFrame.src = recipeUrl;
+      }
+    });
+  </script>
+</body>
+</html>
