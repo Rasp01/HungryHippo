@@ -13,8 +13,15 @@ def index():
   # Construct the path to the recipe folder relative to the current directory
   recipe_folder = os.path.join(current_dir, 'templates')
 
-  recipe_data = getRecipes(csv_file, recipe_folder, num_rows_to_pick).get_recipe_data()
-  return render_template('index.html', recipe_data=recipe_data)
+  getRecipesInstance = getRecipes(csv_file, recipe_folder, num_rows_to_pick)
+
+  getRecipesInstance.get_recipe_data()
+
+  getRecipesInstance.get_random_recipe("https://www.bonappetit.com/simple-cooking/quick?filter=vegetarian%2Cvegan%2Ceasy%2Cweeknight-meals%2Cdinner&sort=most-recent")
+
+  print(getRecipesInstance.recipe_data)
+  
+  return render_template('index.html', recipe_data=getRecipesInstance.recipe_data)
 
 if __name__ == '__main__':
   app.run(debug=True)
