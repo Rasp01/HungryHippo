@@ -1,12 +1,20 @@
 from flask import Flask, render_template
-import requests
-from bs4 import BeautifulSoup
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='templates/recipe')  # Specify static folder location
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+  recipe_categories = [
+    {"name": "Italian", "recipes": [
+      {"title": "Spaghetti Bolognese", "url": "recipe/example.html"},
+      {"title": "Pizza Margherita", "url": "example.html"}
+    ]},
+    {"name": "Asian", "recipes": [
+      {"title": "Pad Thai", "url": "recipe/example.html"},
+      {"title": "Chicken Curry", "url": "example.html"}
+    ]}
+  ]
+  return render_template('index.html', recipe_categories=recipe_categories)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+  app.run(debug=True)
