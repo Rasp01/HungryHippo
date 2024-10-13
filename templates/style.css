@@ -1,0 +1,9 @@
+.recipe-ribbon {
+    position: fixed;
+    left: 0; /* Position on left side */
+    top: 0;
+    height: 100%;
+    width: 200px;
+    background-color: #f0f0f0;
+    padding: 20px;
+  }
