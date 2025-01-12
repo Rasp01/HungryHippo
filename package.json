@@ -1,0 +1,24 @@
+{
+  "name": "hungryhippo",
+  "version": "1.0.0",
+  "description": "Repository for storing code for the  Hungary Hippo Project. An easy way to get recipes for good food without having to make any decisions",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rasp01/HungryHippo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rasp01/HungryHippo/issues"
+  },
+  "homepage": "https://github.com/Rasp01/HungryHippo#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
