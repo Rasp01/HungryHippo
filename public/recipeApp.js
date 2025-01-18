@@ -24,15 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-//   // Add event listener for the Shopping List link
-//   document.getElementById('shopping-list-link').addEventListener('click', (event) => {
-//     event.preventDefault();
-//     document.getElementById('recipe-iframe').src = '/homepage.html';
-//     fetch('/generate-shopping-list')
-//       .then(response => response.json())
-//       .then(data => {
-//         console.log(data); // Log the shopping list to debug
-//         document.getElementById('shopping-list').textContent = data.shoppingList;
-//       });
-//   });
+  // Add event listener for the Shopping List link
+  document.getElementById('shopping-list-link').addEventListener('click', (event) => {
+    event.preventDefault();
+    document.getElementById('recipe-iframe').src = '/homepage.html';
+    fetch('/generate-shopping-list')
+      .then(response => response.json())
+      .then(data => {
+        console.log(data); // Log the shopping list to debug
+        document.getElementById('shopping-list').textContent = data.shoppingList;
+      });
+  });
 });
