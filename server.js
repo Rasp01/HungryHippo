@@ -27,9 +27,8 @@ app.get('/get-recipes', (req, res) => {
   });
 });
 
-
 app.get('/recipes/:recipe', (req, res) => {
-  const recipePath = path.join(__dirname,'public', 'recipes', req.params.recipe);
+  const recipePath = path.join(__dirname, 'public', 'recipes', req.params.recipe);
   res.sendFile(recipePath, (err) => {
     if (err) {
       console.error(err);
@@ -57,7 +56,7 @@ app.get('/generate-shopping-list', async (req, res) => {
           { role: "developer", content: "You are a helpful assistant." },
           { role: "user", content: individualPrompt }
         ],
-        max_tokens: 150,
+        max_tokens: 700,
       }));
       console.log(response.choices[0].message.content.trim());
       shoppingList.push(response.choices[0].message.content.trim());
@@ -72,10 +71,21 @@ app.get('/generate-shopping-list', async (req, res) => {
         { role: "developer", content: "You are a helpful assistant." },
         { role: "user", content: combinedPrompt }
       ],
-      max_tokens: 150,
+      max_tokens: 700,
     }));
-    console.log(finalResponse.choices[0].message.content.trim());
-    res.json({ shoppingList: finalResponse.choices[0].message.content.trim() });
+
+    if (finalResponse.choices && finalResponse.choices.length > 0) {
+      const htmlContent = finalResponse.choices[0].message.content.match(/<ul>[\s\S]*<\/ul>/);
+      if (htmlContent) {
+        res.json({ shoppingList: htmlContent[0] });
+      } else {
+        console.error('No HTML content found in response:', finalResponse);
+        res.status(500).send('Error generating shopping list');
+      }
+    } else {
+      console.error('No choices found in final response:', finalResponse);
+      res.status(500).send('Error generating shopping list');
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send('Error generating shopping list');

@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(response => response.json())
       .then(data => {
         console.log(data); // Log the shopping list to debug
-        document.getElementById('shopping-list').textContent = data.shoppingList;
+        document.getElementById('shopping-list').innerHTML = data.shoppingList;
       });
   });
-});
+}); 
