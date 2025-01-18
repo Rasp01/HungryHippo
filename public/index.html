@@ -21,43 +21,15 @@
     <div id="recipe-content">
       <iframe id="recipe-iframe" style="width: 100%; height: 80vh; border: none;"></iframe>
     </div>
+    <div id="shopping-list-content" style="display: none;">
+      <h1>Shopping List</h1>
+      <pre id="shopping-list"></pre>
+    </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Load the homepage content by default
-      document.getElementById('recipe-iframe').src = '/homepage.html';
-
-      // Fetch and display recipe links
-      fetch('/get-recipes')
-        .then(response => response.json())
-        .then(recipes => {
-          const recipeLinksContainer = document.getElementById('recipe-links');
-          recipes.forEach(recipe => {
-            const listItem = document.createElement('li');
-            listItem.className = 'nav-item';
-            const link = document.createElement('a');
-            link.className = 'nav-link';
-            link.textContent = recipe;
-            link.href = '#';
-            link.addEventListener('click', (event) => {
-              event.preventDefault();
-              document.getElementById('recipe-iframe').src = `/recipes/${recipe}`;
-            });
-            listItem.appendChild(link);
-            recipeLinksContainer.appendChild(listItem);
-          });
-        });
-
-      // Add event listener for the Shopping List link
-      document.getElementById('shopping-list-link').addEventListener('click', (event) => {
-        event.preventDefault();
-        document.getElementById('recipe-iframe').src = '/homepage.html';
-      });
-    });
-  </script>
+  <script src="recipeApp.js"></script>
 </body>
 </html>
