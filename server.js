@@ -15,6 +15,7 @@ const openai = new OpenAI({
 });
 
 app.get('/get-recipes', (req, res) => {
+  console.log('Fetching recipes');
   const recipesDir = path.join(__dirname, 'public', 'recipes');
   fs.readdir(recipesDir, (err, files) => {
     if (err) {
@@ -28,6 +29,7 @@ app.get('/get-recipes', (req, res) => {
 });
 
 app.get('/recipes/:recipe', (req, res) => {
+  console.log('Fetching recipe:', req.params.recipe);
   const recipePath = path.join(__dirname, 'public', 'recipes', req.params.recipe);
   res.sendFile(recipePath, (err) => {
     if (err) {
@@ -87,8 +89,17 @@ app.get('/generate-shopping-list', async (req, res) => {
       res.status(500).send('Error generating shopping list');
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Error generating shopping list');
+    console.error('Error generating shopping list:', error);
+    if (error.response && error.response.data && error.response.data.error) {
+      const errorMessage = error.response.data.error.message;
+      if (errorMessage.includes('token limit')) {
+        res.status(400).json({ error: 'Token limit exceeded. Please reduce the size of your request.' });
+      } else {
+        res.status(500).json({ error: errorMessage });
+      }
+    } else {
+      res.status(500).json({ error: 'An error occurred while generating the shopping list.' + error.message });
+    }
   }
 });
 
