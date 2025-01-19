@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('Fetching shopping ingrediants');
   // Fetch and display the shopping list on initial load
   fetch('/generate-shopping-list')
     .then(response => response.json())
@@ -32,16 +33,4 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-  // // Add event listener for the Shopping List link
-  // document.getElementById('shopping-list-link').addEventListener('click', (event) => {
-  //   event.preventDefault();
-  //   fetch('/generate-shopping-list')
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       console.log(data); // Log the shopping list to debug
-  //       document.getElementById('shopping-list').innerHTML = data.shoppingList;
-  //       document.getElementById('recipe-content').style.display = 'none';
-  //       document.getElementById('shopping-list-content').style.display = 'flex';
-  //     });
-  // });
 });
