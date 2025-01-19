@@ -1,13 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Fetching shopping ingrediants');
-  // Fetch and display the shopping list on initial load
-  fetch('/generate-shopping-list')
-    .then(response => response.json())
-    .then(data => {
-      console.log(data); // Log the shopping list to debug
-      document.getElementById('shopping-list').innerHTML = data.shoppingList;
+  let shoppingListCache = null;
+
+  const loadShoppingList = () => {
+    if (shoppingListCache) {
+      document.getElementById('shopping-list').innerHTML = shoppingListCache;
       document.getElementById('shopping-list-content').style.display = 'flex';
-    });
+    } else {
+      fetch('/generate-shopping-list')
+        .then(response => response.json())
+        .then(data => {
+          console.log(data); // Log the shopping list to debug
+          shoppingListCache = data.shoppingList;
+          document.getElementById('shopping-list').innerHTML = shoppingListCache;
+          document.getElementById('shopping-list-content').style.display = 'flex';
+        });
+    }
+  };
+
+  // Load the shopping list on initial load
+  loadShoppingList();
 
   // Fetch and display recipe links
   fetch('/get-recipes')
@@ -33,4 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+  // Add event listener to the "Hungary Hippo" title
+  document.querySelector('.navbar-brand').addEventListener('click', (event) => {
+    event.preventDefault();
+    document.getElementById('recipe-content').style.display = 'none';
+    loadShoppingList();
+  });
 });
