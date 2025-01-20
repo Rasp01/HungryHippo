@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const csv = require('csv-parser');
 const app = express();
 app.use(express.static('public'));
 const { OpenAI } = require('openai');
@@ -51,7 +52,7 @@ app.get('/generate-shopping-list', async (req, res) => {
 
     let shoppingList = [];
     for (const recipeContent of recipeContents) {
-      const individualPrompt = `Generate a shopping list for the following recipe:\n\n${recipeContent}`;
+      const individualPrompt = `Generate a shopping list for the following recipe:\n\n${recipeContent}. Make it concise `;
       const response = await retryRequest(() => openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
@@ -100,6 +101,46 @@ app.get('/generate-shopping-list', async (req, res) => {
     } else {
       res.status(500).json({ error: 'An error occurred while generating the shopping list.' + error.message });
     }
+  }
+});
+
+app.get('/scrape-random-recipes', async (req, res) => {
+  try {
+    const csvFilePath = path.join(__dirname, 'HungaryHippoRecipies.csv');
+    const recipes = [];
+
+    // Read the CSV file and parse it
+    fs.createReadStream(csvFilePath)
+      .pipe(csv())
+      .on('data', (row) => {
+        recipes.push(row);
+      })
+      .on('end', async () => {
+        // Select three random recipes
+        const randomRecipes = [];
+        for (let i = 0; i < 3; i++) {
+          const randomIndex = Math.floor(Math.random() * recipes.length);
+          randomRecipes.push(recipes[randomIndex]);
+        }
+
+        // Scrape the HTML from the selected recipes and save to the recipes folder
+        for (const recipe of randomRecipes) {
+          const { 'Recipe Name': recipeName, URL } = recipe;
+          const response = await axios.get(URL);
+          const $ = cheerio.load(response.data);
+          const htmlContent = $.html();
+
+          // Save the HTML content to the recipes folder
+          const fileName = `${recipeName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.html`;
+          const filePath = path.join(__dirname, 'public', 'recipes', fileName);
+          fs.writeFileSync(filePath, htmlContent);
+        }
+
+        res.json({ message: 'Scraped and saved three random recipes successfully.' });
+      });
+  } catch (error) {
+    console.error('Error scraping recipes:', error);
+    res.status(500).json({ error: 'An error occurred while scraping recipes.' });
   }
 });
 

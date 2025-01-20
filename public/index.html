@@ -3,6 +3,30 @@
 <head>
   <title>Hungary Hippo</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    #shopping-list {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    #shopping-list ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+    #shopping-list li {
+      margin-bottom: 10px;
+    }
+    .fixed-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+  </style>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -26,6 +50,8 @@
       <pre id="shopping-list"></pre>
     </div>
   </div>
+
+  <button class="btn btn-primary fixed-button" id="scrape-recipes-button">Reset Recipes</button>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
