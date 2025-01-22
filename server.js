@@ -1,8 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
-const cheerio = require('cheerio');
+const { exec } = require('child_process');
 const csv = require('csv-parser');
 const app = express();
 app.use(express.static('public'));
@@ -15,29 +14,74 @@ const openai = new OpenAI({
   apiKey: API_KEY,
 });
 
+let recipesData = {};
+
+app.get('/scrape-random-recipes', (req, res) => {
+  const csvFilePath = path.join(__dirname, 'HungaryHippoRecipies.csv');
+  const recipes = [];
+
+  fs.createReadStream(csvFilePath)
+    .pipe(csv())
+    .on('data', (row) => {
+      recipes.push(row);
+    })
+    .on('end', () => {
+      // Select three random recipes
+      const randomRecipes = [];
+      for (let i = 0; i < 3; i++) {
+        const randomIndex = Math.floor(Math.random() * recipes.length);
+        randomRecipes.push(recipes[randomIndex]);
+      }
+
+      // Store the selected recipes in the global variable
+      recipesData = randomRecipes.reduce((acc, recipe) => {
+        acc[recipe['Recipe Name']] = recipe.URL;
+        return acc;
+      }, {});
+
+      res.json(recipesData);
+
+      // Serialize the dictionary into a JSON string
+      const recipesJson = JSON.stringify(recipesData);
+      
+      // Get the text data from the recipes
+      // Specify the full path to the Python executable
+      const pythonExecutable = 'C:/Users/raffy/anaconda3/envs/spareroomScraping/python.exe'; // Update this path as needed
+      const pythonScriptPath = path.join(__dirname, 'scrapeText.py');
+
+      // Construct the command with the JSON string as an argument
+      const command = `${pythonExecutable} ${pythonScriptPath} '${recipesJson}'`;
+
+      exec(command, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error executing Python script: ${error.message}`);
+          return res.status(500).json({ error: 'Error executing Python script' });
+        }
+
+        if (stderr) {
+          console.error(`Python script error: ${stderr}`);
+          return res.status(500).json({ error: 'Python script error' });
+        }
+    });
+  });
+});
+
 app.get('/get-recipes', (req, res) => {
   console.log('Fetching recipes');
-  const recipesDir = path.join(__dirname, 'public', 'recipes');
-  fs.readdir(recipesDir, (err, files) => {
-    if (err) {
-      console.error('Error reading recipes directory:', err);
-      res.status(500).send('Error reading recipes directory');
-    } else {
-      console.log('Recipes found:', files);
-      res.json(files);
-    }
-  });
+  const recipeNames = recipesData;
+  console.log('Fetched recipes:', recipeNames);
+  res.json(recipeNames);
 });
 
 app.get('/recipes/:recipe', (req, res) => {
   console.log('Fetching recipe:', req.params.recipe);
-  const recipePath = path.join(__dirname, 'public', 'recipes', req.params.recipe);
-  res.sendFile(recipePath, (err) => {
-    if (err) {
-      console.error(err);
-      res.status(404).send('Recipe not found');
-    }
-  });
+  const recipeName = req.params.recipe;
+  const recipeUrl = recipesData[recipeName];
+  if (recipeUrl) {
+    res.json({ url: recipeUrl });
+  } else {
+    res.status(404).send('Recipe not found');
+  }
 });
 
 app.get('/generate-shopping-list', async (req, res) => {
@@ -46,8 +90,7 @@ app.get('/generate-shopping-list', async (req, res) => {
     const recipeFiles = fs.readdirSync(recipesDir);
     const recipeContents = recipeFiles.map(file => {
       const content = fs.readFileSync(path.join(recipesDir, file), 'utf-8');
-      const $ = cheerio.load(content);
-      return $('body').text(); // Extract text content from the body
+      return content; // Read text content from the file
     });
 
     let shoppingList = [];
@@ -101,60 +144,6 @@ app.get('/generate-shopping-list', async (req, res) => {
     } else {
       res.status(500).json({ error: 'An error occurred while generating the shopping list.' + error.message });
     }
-  }
-});
-
-app.get('/scrape-random-recipes', async (req, res) => {
-  try {
-    const recipesDir = path.join(__dirname, 'public', 'recipes');
-    const csvFilePath = path.join(__dirname, 'HungaryHippoRecipies.csv');
-    const recipes = [];
-
-    // Delete previous files in the recipes folder
-    fs.readdir(recipesDir, (err, files) => {
-      if (err) {
-        console.error('Error reading recipes directory:', err);
-      } else {
-        files.forEach(file => {
-          fs.unlink(path.join(recipesDir, file), err => {
-            if (err) console.error('Error deleting file:', err);
-          });
-        });
-      }
-    });
-
-    // Read the CSV file and parse it
-    fs.createReadStream(csvFilePath)
-      .pipe(csv())
-      .on('data', (row) => {
-        recipes.push(row);
-      })
-      .on('end', async () => {
-        // Select three random recipes
-        const randomRecipes = [];
-        for (let i = 0; i < 3; i++) {
-          const randomIndex = Math.floor(Math.random() * recipes.length);
-          randomRecipes.push(recipes[randomIndex]);
-        }
-
-        // Scrape the HTML from the selected recipes and save to the recipes folder
-        for (const recipe of randomRecipes) {
-          const { 'Recipe Name': recipeName, URL } = recipe;
-          const response = await axios.get(URL);
-          const $ = cheerio.load(response.data);
-          const htmlContent = $.html();
-
-          // Save the HTML content to the recipes folder
-          const fileName = `${recipeName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.html`;
-          const filePath = path.join(recipesDir, fileName);
-          fs.writeFileSync(filePath, htmlContent);
-        }
-
-        res.json({ message: 'Scraped and saved three random recipes successfully.' });
-      });
-  } catch (error) {
-    console.error('Error scraping recipes:', error);
-    res.status(500).json({ error: 'An error occurred while scraping recipes.' });
   }
 });
 

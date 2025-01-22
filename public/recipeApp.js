@@ -24,8 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(recipes); // Log the recipes to debug
         const recipeLinksContainer = document.getElementById('recipe-links');
         recipeLinksContainer.innerHTML = ''; // Clear existing links
-        recipes.forEach(recipe => {
-          const recipeName = recipe.replace('.html', ''); // Remove .html extension
+        Object.keys(recipes).forEach(recipeName => {
           const listItem = document.createElement('li');
           listItem.className = 'nav-item';
           const link = document.createElement('a');
@@ -34,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
           link.href = '#';
           link.addEventListener('click', (event) => {
             event.preventDefault();
-            document.getElementById('recipe-iframe').src = `/recipes/${recipe}`;
+            const recipeUrl = recipes[recipeName];
+            document.getElementById('recipe-iframe').src = recipeUrl;
             document.getElementById('shopping-list-content').style.display = 'none';
             document.getElementById('recipe-content').style.display = 'block';
           });
