@@ -106,8 +106,22 @@ app.get('/generate-shopping-list', async (req, res) => {
 
 app.get('/scrape-random-recipes', async (req, res) => {
   try {
+    const recipesDir = path.join(__dirname, 'public', 'recipes');
     const csvFilePath = path.join(__dirname, 'HungaryHippoRecipies.csv');
     const recipes = [];
+
+    // Delete previous files in the recipes folder
+    fs.readdir(recipesDir, (err, files) => {
+      if (err) {
+        console.error('Error reading recipes directory:', err);
+      } else {
+        files.forEach(file => {
+          fs.unlink(path.join(recipesDir, file), err => {
+            if (err) console.error('Error deleting file:', err);
+          });
+        });
+      }
+    });
 
     // Read the CSV file and parse it
     fs.createReadStream(csvFilePath)
@@ -132,7 +146,7 @@ app.get('/scrape-random-recipes', async (req, res) => {
 
           // Save the HTML content to the recipes folder
           const fileName = `${recipeName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.html`;
-          const filePath = path.join(__dirname, 'public', 'recipes', fileName);
+          const filePath = path.join(recipesDir, fileName);
           fs.writeFileSync(filePath, htmlContent);
         }
 

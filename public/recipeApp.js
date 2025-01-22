@@ -25,11 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const recipeLinksContainer = document.getElementById('recipe-links');
         recipeLinksContainer.innerHTML = ''; // Clear existing links
         recipes.forEach(recipe => {
+          const recipeName = recipe.replace('.html', ''); // Remove .html extension
           const listItem = document.createElement('li');
           listItem.className = 'nav-item';
           const link = document.createElement('a');
           link.className = 'nav-link';
-          link.textContent = recipe;
+          link.textContent = recipeName;
           link.href = '#';
           link.addEventListener('click', (event) => {
             event.preventDefault();
