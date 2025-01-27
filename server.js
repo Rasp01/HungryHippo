@@ -17,6 +17,7 @@ const openai = new OpenAI({
 let recipesData = {};
 
 app.get('/scrape-random-recipes', (req, res) => {
+  console.log('Getting random recipes');
   const csvFilePath = path.join(__dirname, 'HungaryHippoRecipies.csv');
   const recipes = [];
 
@@ -39,18 +40,15 @@ app.get('/scrape-random-recipes', (req, res) => {
         return acc;
       }, {});
 
-      res.json(recipesData);
+      // Write the selected recipes to selectedRecipes.json in the public directory
+      const selectedRecipesPath = path.join(__dirname, 'public', 'selectedRecipes.json');
+      fs.writeFileSync(selectedRecipesPath, JSON.stringify(recipesData, null, 2), 'utf-8');
 
-      // Serialize the dictionary into a JSON string
-      const recipesJson = JSON.stringify(recipesData);
-      
-      // Get the text data from the recipes
-      // Specify the full path to the Python executable
+      console.log('Running Python script to process the selected recipes...');
+      // Run the Python script to process the selected recipes
       const pythonExecutable = 'C:/Users/raffy/anaconda3/envs/spareroomScraping/python.exe'; // Update this path as needed
       const pythonScriptPath = path.join(__dirname, 'scrapeText.py');
-
-      // Construct the command with the JSON string as an argument
-      const command = `${pythonExecutable} ${pythonScriptPath} '${recipesJson}'`;
+      const command = `${pythonExecutable} ${pythonScriptPath}`;
 
       exec(command, (error, stdout, stderr) => {
         if (error) {
@@ -62,25 +60,40 @@ app.get('/scrape-random-recipes', (req, res) => {
           console.error(`Python script error: ${stderr}`);
           return res.status(500).json({ error: 'Python script error' });
         }
+
+        console.log(`Python script output:\n${stdout}`);
+        res.json(recipesData);
+      });
+
+      res.json(recipesData);
     });
-  });
 });
 
 app.get('/get-recipes', (req, res) => {
   console.log('Fetching recipes');
-  const recipeNames = recipesData;
-  console.log('Fetched recipes:', recipeNames);
-  res.json(recipeNames);
+  const selectedRecipesPath = path.join(__dirname, 'public', 'selectedRecipes.json');
+  if (fs.existsSync(selectedRecipesPath)) {
+    const recipesData = JSON.parse(fs.readFileSync(selectedRecipesPath, 'utf-8'));
+    res.json(recipesData);
+  } else {
+    res.status(404).send('No recipes found');
+  }
 });
 
 app.get('/recipes/:recipe', (req, res) => {
   console.log('Fetching recipe:', req.params.recipe);
-  const recipeName = req.params.recipe;
-  const recipeUrl = recipesData[recipeName];
-  if (recipeUrl) {
-    res.json({ url: recipeUrl });
+  const selectedRecipesPath = path.join(__dirname, 'public', 'selectedRecipes.json');
+  if (fs.existsSync(selectedRecipesPath)) {
+    const recipesData = JSON.parse(fs.readFileSync(selectedRecipesPath, 'utf-8'));
+    const recipeName = req.params.recipe;
+    const recipeUrl = recipesData[recipeName];
+    if (recipeUrl) {
+      res.json({ url: recipeUrl });
+    } else {
+      res.status(404).send('Recipe not found');
+    }
   } else {
-    res.status(404).send('Recipe not found');
+    res.status(404).send('No recipes found');
   }
 });
 
@@ -90,27 +103,12 @@ app.get('/generate-shopping-list', async (req, res) => {
     const recipeFiles = fs.readdirSync(recipesDir);
     const recipeContents = recipeFiles.map(file => {
       const content = fs.readFileSync(path.join(recipesDir, file), 'utf-8');
+      console.log('Read content from file:', file);
       return content; // Read text content from the file
     });
 
-    let shoppingList = [];
-    for (const recipeContent of recipeContents) {
-      const individualPrompt = `Generate a shopping list for the following recipe:\n\n${recipeContent}. Make it concise `;
-      const response = await retryRequest(() => openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "developer", content: "You are a helpful assistant." },
-          { role: "user", content: individualPrompt }
-        ],
-        max_tokens: 700,
-      }));
-      console.log(response.choices[0].message.content.trim());
-      shoppingList.push(response.choices[0].message.content.trim());
-    }
-
-    const combinedPrompt = `Combine the following shopping lists into one comprehensive shopping list:\n\n${shoppingList.join('\n\n')}.
-    Present the ingredients as an unordered HTML list (<ul>). 
-    Each ingredient should be in its own list item (<li>).`;
+    const combinedPrompt = `Generate a shopping list for the following recipes. Combine them into one comprehensive shopping list and present the ingredients as an unordered HTML list (<ul>), with each ingredient in its own list item (<li>):\n\n${recipeContents.join('\n\n')}`;
+    
     const finalResponse = await retryRequest(() => openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
