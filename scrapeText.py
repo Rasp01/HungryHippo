@@ -1,4 +1,5 @@
 import sys
+import json
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -47,12 +48,11 @@ class HtmlTextExtractor:
                 file.write(text)
 
 # Example usage
-if __name__ == "__main__":
-    recipes = {
-        'Garlicky Smashed Chickpeas with Corn': 'https://www.bonappetit.com/recipe/garlicky-smashed-chickpeas-with-corn',
-        'Kimchi Lentil Stew with Poached Eggs': 'https://www.bonappetit.com/recipe/kimchi-lentil-stew-with-poached-eggs',
-        'Chilaquiles Verdes': 'https://www.isabeleats.com/chilaquiles-verdes/#recipe'
-    }
+if __name__ == "__main__": 
+    with open(os.path.join('public', 'selectedRecipes.json'), 'r', encoding='utf-8') as f:
+        recipes = json.load(f)
+        print(recipes)
+
 
     extractor = HtmlTextExtractor(recipes)
     extractor.fetch_html()
