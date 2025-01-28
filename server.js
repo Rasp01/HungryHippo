@@ -27,6 +27,7 @@ app.get('/scrape-random-recipes', (req, res) => {
       recipes.push(row);
     })
     .on('end', () => {
+      console.log('Finished reading CSV file.');
       // Select three random recipes
       const randomRecipes = [];
       for (let i = 0; i < 3; i++) {
@@ -34,11 +35,15 @@ app.get('/scrape-random-recipes', (req, res) => {
         randomRecipes.push(recipes[randomIndex]);
       }
 
+      console.log('Selected random recipes:', randomRecipes);
+
       // Store the selected recipes in the global variable
       recipesData = randomRecipes.reduce((acc, recipe) => {
         acc[recipe['Recipe Name']] = recipe.URL;
         return acc;
       }, {});
+
+      console.log('Recipes data:', recipesData);
 
       // Write the selected recipes to selectedRecipes.json in the public directory
       const selectedRecipesPath = path.join(__dirname, 'public', 'selectedRecipes.json');
@@ -62,10 +67,8 @@ app.get('/scrape-random-recipes', (req, res) => {
         }
 
         console.log(`Python script output:\n${stdout}`);
-        res.json(recipesData);
       });
 
-      res.json(recipesData);
     });
 });
 
