@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(recipes => {
         console.log(recipes); // Log the recipes to debug
         const recipeLinksContainer = document.getElementById('recipe-links');
-        recipeLinksContainer.innerHTML = ''; // Clear existing links
+        const fragment = document.createDocumentFragment();
         Object.keys(recipes).forEach(recipeName => {
           const listItem = document.createElement('li');
           listItem.className = 'nav-item';
@@ -39,16 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('recipe-content').style.display = 'block';
           });
           listItem.appendChild(link);
-          recipeLinksContainer.insertBefore(listItem, recipeLinksContainer.firstChild);
+          fragment.appendChild(listItem);
         });
+        recipeLinksContainer.innerHTML = ''; // Clear existing links
+        recipeLinksContainer.appendChild(fragment); // Batch update
       });
   };
 
-  // Load the shopping list on initial load
-  loadShoppingList();
-
-  // Fetch and display recipe links
-  loadRecipes();
+  // Load the shopping list and recipes in parallel
+  Promise.all([loadShoppingList(), loadRecipes()]);
 
   // Add event listener to the "Hungary Hippo" title
   document.querySelector('.navbar-brand').addEventListener('click', (event) => {
