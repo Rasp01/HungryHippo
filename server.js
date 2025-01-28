@@ -67,6 +67,8 @@ app.get('/scrape-random-recipes', (req, res) => {
         }
 
         console.log(`Python script output:\n${stdout}`);
+        res.json(stdout);
+
       });
 
     });

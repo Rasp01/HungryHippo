@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(data => {
         console.log(data); // Log the response to debug
         loadRecipes(); // Refresh the navbar with the new recipes
+        loadShoppingList(); // Refresh the shopping list
       })
       .catch(error => {
         console.error('Error scraping recipes:', error);
