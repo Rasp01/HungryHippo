@@ -27,6 +27,7 @@ class HtmlTextExtractor:
         for name, html_content in self.html_contents.items():
             soup = BeautifulSoup(html_content, 'html.parser')
             text = soup.get_text(separator='\n')
+            text = text.replace(" ", "").replace("\n", "")
             self.extracted_texts[name] = text
 
     def compare_lengths(self):
