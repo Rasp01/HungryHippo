@@ -1,5 +1,5 @@
-import sys
 import json
+import shutil
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -40,12 +40,14 @@ class HtmlTextExtractor:
             print('')
 
     def save_texts(self, directory):
-        if not os.path.exists(directory):
+            # Wipe the directory before saving new files
+            if os.path.exists(directory):
+                shutil.rmtree(directory)
             os.makedirs(directory)
-        for name, text in self.extracted_texts.items():
-            file_path = os.path.join(directory, f"{name.replace(' ', '_').lower()}.txt")
-            with open(file_path, 'w', encoding='utf-8') as file:
-                file.write(text)
+            for name, text in self.extracted_texts.items():
+                file_path = os.path.join(directory, f"{name.replace(' ', '_').lower()}.txt")
+                with open(file_path, 'w', encoding='utf-8') as file:
+                    file.write(text)
 
 # Example usage
 if __name__ == "__main__": 
