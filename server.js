@@ -126,6 +126,8 @@ app.get('/generate-shopping-list', async (req, res) => {
     if (finalResponse.choices && finalResponse.choices.length > 0) {
       const htmlContent = finalResponse.choices[0].message.content.match(/<ul>[\s\S]*<\/ul>/);
       if (htmlContent) {
+        const shoppingListPath = path.join(__dirname, 'public', 'shoppingList.html');
+        fs.writeFileSync(shoppingListPath, htmlContent[0], 'utf-8');
         res.json({ shoppingList: htmlContent[0] });
       } else {
         console.error('No HTML content found in response:', finalResponse);

@@ -1,20 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-  let shoppingListCache = null;
-
   const loadShoppingList = () => {
-    if (shoppingListCache) {
-      document.getElementById('shopping-list').innerHTML = shoppingListCache;
-      document.getElementById('shopping-list-content').style.display = 'flex';
-    } else {
-      fetch('/generate-shopping-list')
-        .then(response => response.json())
-        .then(data => {
-          console.log(data); // Log the shopping list to debug
-          shoppingListCache = data.shoppingList;
-          document.getElementById('shopping-list').innerHTML = shoppingListCache;
-          document.getElementById('shopping-list-content').style.display = 'flex';
-        });
-    }
+    fetch('/shoppingList.html')
+      .then(response => response.text())
+      .then(data => {
+        console.log(data); // Log the shopping list to debug
+        document.getElementById('shopping-list').innerHTML = data;
+        document.getElementById('shopping-list-content').style.display = 'flex';
+      })
+      .catch(error => {
+        console.error('Error loading shopping list:', error);
+      });
   };
 
   const loadRecipes = () => {
@@ -46,6 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   };
 
+  const generateShoppingList = () => {
+    return fetch('/generate-shopping-list')
+      .then(response => response.json())
+      .then(data => {
+        console.log(data); // Log the response to debug
+        loadShoppingList(); // Refresh the shopping list
+      })
+      .catch(error => {
+        console.error('Error generating shopping list:', error);
+      });
+  };
+
   // Load the shopping list and recipes in parallel
   Promise.all([loadShoppingList(), loadRecipes()]);
 
@@ -63,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(data => {
         console.log(data); // Log the response to debug
         loadRecipes(); // Refresh the navbar with the new recipes
-        loadShoppingList(); // Refresh the shopping list
+        return generateShoppingList(); // Generate and refresh the shopping list
       })
       .catch(error => {
         console.error('Error scraping recipes:', error);
