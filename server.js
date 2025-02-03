@@ -112,7 +112,47 @@ app.get('/generate-shopping-list', async (req, res) => {
       return content; // Read text content from the file
     });
 
-    const combinedPrompt = `Generate a shopping list for the following recipes. Merge all the recipe ingrediants together then split the ingredients into separate lists these should be Fruit and Veg,Dairy/Deli,Bakery,Tinned Foods, Hebs and Spices and Other.Present them as unordered HTML lists (<ul>), with each ingredient in its own list item (<li>):\n\n${recipeContents.join('\n\n')}`;
+    const combinedPrompt = `Generate a shopping list for the following recipes. Merge all the recipe ingredients together, then split the ingredients into separate lists as specified below.  Ensure all ingredients are placed within one of the provided div sections.
+
+    <div class="fruit-veg">
+      <h3>Fruit and Veg</h3>
+      <ul>
+      </ul>
+    </div>
+    
+    <div class="dairy-deli">
+      <h3>Dairy/Deli</h3>
+      <ul>
+      </ul>
+    </div>
+    
+    <div class="bakery">
+      <h3>Bakery</h3>
+      <ul>
+      </ul>
+    </div>
+    
+    <div class="tinned-foods">
+      <h3>Tinned Foods</h3>
+      <ul>
+      </ul>
+    </div>
+    
+    <div class="herbs-spices">
+      <h3>Herbs and Spices</h3>
+      <ul>
+      </ul>
+    </div>
+    
+    <div class="other">
+      <h3>Other</h3>
+      <ul>
+      </ul>
+    </div>
+    
+    Explicitly categorize each ingredient in the following recipes.  Pay close attention to identifying fruits and vegetables.  If an item could arguably fit into multiple categories, make your best judgment.
+    
+    Here are the recipes:\n\n${recipeContents.join('\n\n')}`;
     
     const finalResponse = await retryRequest(() => openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -124,7 +164,8 @@ app.get('/generate-shopping-list', async (req, res) => {
     }));
 
     if (finalResponse.choices && finalResponse.choices.length > 0) {
-      const htmlContent = finalResponse.choices[0].message.content.match(/<ul>[\s\S]*<\/ul>/);
+      console.log('Final response:', finalResponse.choices[0].message.content);
+      const htmlContent = finalResponse.choices[0].message.content.match(/```html([\s\S]*?)```/);
       if (htmlContent) {
         const shoppingListPath = path.join(__dirname, 'public', 'shoppingList.html');
         fs.writeFileSync(shoppingListPath, htmlContent[0], 'utf-8');
