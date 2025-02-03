@@ -1,14 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
   const loadShoppingList = () => {
     fetch('/shoppingList.html')
-      .then(response => response.text())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('No shopping list available');
+        }
+        return response.text();
+      })
       .then(data => {
         console.log(data); // Log the shopping list to debug
         document.getElementById('shopping-list').innerHTML = data;
         document.getElementById('shopping-list-content').style.display = 'flex';
       })
       .catch(error => {
-        console.error('Error loading shopping list:', error);
+        console.error('Error loading shopping list:', error.message);
+        console.log('No shopping list available');
       });
   };
 

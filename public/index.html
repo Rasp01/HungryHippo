@@ -42,9 +42,6 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav" id="recipe-links">
         <!-- Recipe links will be added here -->
-        <!-- <li class="nav-item">
-          <a class="nav-link" href="#" id="shopping-list-link">Shopping List</a>
-        </li> -->
       </ul>
     </div>
   </nav>
@@ -53,17 +50,57 @@
     <div id="recipe-content" style="display: none;">
       <iframe id="recipe-iframe" style="width: 100%; height: 80vh; border: none;"></iframe>
     </div>
-    <div id="shopping-list-content">
+    <div id="shopping-list-content" style="display: flex;">
       <h1>Shopping List</h1>
-      <pre id="shopping-list"></pre>
+      <pre id="shopping-list">
+        <div class="fruit-veg">
+          <h3>Fruit and Veg</h3>
+          <ul>
+            <li>Example Fruit</li>
+            <li>Example Vegetable</li>
+          </ul>
+        </div>
+
+        <div class="dairy-deli">
+          <h3>Dairy/Deli</h3>
+          <ul>
+            <li>Example Dairy</li>
+            <li>Example Deli</li>
+          </ul>
+        </div>
+
+        <div class="bakery">
+          <h3>Bakery</h3>
+          <ul>
+            <li>Example Bakery Item</li>
+          </ul>
+        </div>
+
+        <div class="tinned-foods">
+          <h3>Tinned Foods</h3>
+          <ul>
+            <li>Example Tinned Food</li>
+          </ul>
+        </div>
+
+        <div class="herbs-spices">
+          <h3>Herbs and Spices</h3>
+          <ul>
+            <li>Example Herb</li>
+            <li>Example Spice</li>
+          </ul>
+        </div>
+
+        <div class="other">
+          <h3>Other</h3>
+          <ul>
+            <li>Example Other Item</li>
+          </ul>
+        </div>
+      </pre>
     </div>
   </div>
-
-  <button class="btn btn-primary fixed-button" id="scrape-recipes-button">Reset Recipes</button>
-
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <button id="scrape-recipes-button" class="btn btn-primary fixed-button">Scrape Recipes</button>
   <script src="recipeApp.js"></script>
 </body>
 </html>
