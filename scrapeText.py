@@ -3,6 +3,7 @@ import shutil
 import requests
 from bs4 import BeautifulSoup
 import os
+import time
 
 class HtmlTextExtractor:
     def __init__(self, recipes):
@@ -52,6 +53,9 @@ class HtmlTextExtractor:
 
 # Example usage
 if __name__ == "__main__": 
+
+    start_time = time.time()  # Record the start time
+
     with open(os.path.join('public', 'selectedRecipes.json'), 'r', encoding='utf-8') as f:
         recipes = json.load(f)
         print(recipes)
@@ -62,3 +66,7 @@ if __name__ == "__main__":
     extractor.extract_texts()
     extractor.compare_lengths()
     extractor.save_texts('public/recipes')
+
+    end_time = time.time()  # Record the end time
+    runtime = end_time - start_time  # Calculate  the runtime
+    print(f"Runtime of the program is {runtime:.2f} seconds")  # Print the runtime
