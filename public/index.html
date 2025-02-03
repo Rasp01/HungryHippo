@@ -13,23 +13,38 @@
       z-index: 1000;
     }
     /* Category-specific styles */
+    .fruit-veg, .dairy-deli, .bakery, .tinned-foods, .herbs-spices, .other {
+      color: black;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
     .fruit-veg {
-      color: green;
+      background-color: rgba(0, 128, 0, 0.20); /* Green with 50% transparency */
+      background-image: url('fruit-veg.png'); /* Replace with actual local image file */
     }
     .dairy-deli {
-      color: blue;
+      background-color: rgba(0, 0, 255, 0.20); /* Blue with 50% transparency */
+      background-image: url('dairy-deli.png'); /* Replace with actual local image file */
     }
     .bakery {
-      color: orange;
+      background-color: rgba(255, 165, 0, 0.20); /* Orange with 50% transparency */
+      background-image: url('bakery.png'); /* Replace with actual local image file */
     }
     .tinned-foods {
-      color: purple;
+      background-color: rgba(128, 0, 128, 0.20); /* Purple with 50% transparency */
+      background-image: url('tinned-foods.png'); /* Replace with actual local image file */
     }
     .herbs-spices {
-      color: brown;
+      background-color: rgba(165, 42, 42, 0.20); /* Brown with 50% transparency */
+      background-image: url('herbs-spices.png'); /* Replace with actual local image file */
     }
     .other {
-      color: red;
+      background-color: rgba(255, 0, 0, 0.20); /* Red with 50% transparency */
+      background-image: url('other.png'); /* Replace with actual local image file */
     }
   </style>
 </head>
@@ -50,9 +65,9 @@
     <div id="recipe-content" style="display: none;">
       <iframe id="recipe-iframe" style="width: 100%; height: 80vh; border: none;"></iframe>
     </div>
-    <div id="shopping-list-content" style="display: flex;">
+    <div id="shopping-list-content" style="display: flex; flex-direction: column;">
       <h1>Shopping List</h1>
-      <pre id="shopping-list">
+      <div id="shopping-list">
         <div class="fruit-veg">
           <h3>Fruit and Veg</h3>
           <ul>
@@ -97,7 +112,7 @@
             <li>Example Other Item</li>
           </ul>
         </div>
-      </pre>
+      </div>
     </div>
   </div>
   <button id="scrape-recipes-button" class="btn btn-primary fixed-button">Scrape Recipes</button>
