@@ -30,9 +30,14 @@ app.get('/scrape-random-recipes', (req, res) => {
       console.log('Finished reading CSV file.');
       // Select three random recipes
       const randomRecipes = [];
-      for (let i = 0; i < 3; i++) {
+      const selectedIndices = new Set();
+
+      while (randomRecipes.length < 3 && selectedIndices.size < recipes.length) {
         const randomIndex = Math.floor(Math.random() * recipes.length);
-        randomRecipes.push(recipes[randomIndex]);
+        if (!selectedIndices.has(randomIndex)) {
+          selectedIndices.add(randomIndex);
+          randomRecipes.push(recipes[randomIndex]);
+        }
       }
 
       console.log('Selected random recipes:', randomRecipes);
