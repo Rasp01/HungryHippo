@@ -112,7 +112,7 @@ app.get('/generate-shopping-list', async (req, res) => {
       return content; // Read text content from the file
     });
 
-    const combinedPrompt = `Generate a shopping list for the following recipes. Combine them into one comprehensive shopping list and present the ingredients as an unordered HTML list (<ul>), with each ingredient in its own list item (<li>):\n\n${recipeContents.join('\n\n')}`;
+    const combinedPrompt = `Generate a shopping list for the following recipes. Merge all the recipe ingrediants together then split the ingredients into separate lists these should be Fruit and Veg,Dairy/Deli,Bakery,Tinned Foods, Hebs and Spices and Other.Present them as unordered HTML lists (<ul>), with each ingredient in its own list item (<li>):\n\n${recipeContents.join('\n\n')}`;
     
     const finalResponse = await retryRequest(() => openai.chat.completions.create({
       model: "gpt-4o-mini",
