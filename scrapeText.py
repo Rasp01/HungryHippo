@@ -42,14 +42,14 @@ class HtmlTextExtractor:
             print('')
 
     def save_texts(self, directory):
-            # Wipe the directory before saving new files
-            if os.path.exists(directory):
-                shutil.rmtree(directory)
-            os.makedirs(directory)
-            for name, text in self.extracted_texts.items():
-                file_path = os.path.join(directory, f"{name.replace(' ', '_').lower()}.txt")
-                with open(file_path, 'w', encoding='utf-8') as file:
-                    file.write(text)
+        # Wipe the directory before saving new files
+        if os.path.exists(directory):
+            shutil.rmtree(directory)
+        os.makedirs(directory)
+        for name, text in self.extracted_texts.items():
+            file_path = os.path.join(directory, f"{name.replace(' ', '_').lower()}.txt")
+            with open(file_path, 'w', encoding='utf-8') as file:
+                file.write(text)
 
     def save_html(self, directory):
         # Wipe the directory before saving new files
@@ -75,9 +75,7 @@ if __name__ == "__main__":
     extractor.fetch_html()
     extractor.extract_texts()
     extractor.compare_lengths()
-    extractor.save_texts('public/recipes/txt')
-    extractor.save_html('public/recipes/html')
-
+    extractor.save_texts('public/recipes')
 
     end_time = time.time()  # Record the end time
     runtime = end_time - start_time  # Calculate  the runtime
