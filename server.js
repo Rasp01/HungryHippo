@@ -165,7 +165,7 @@ app.get('/generate-shopping-list', async (req, res) => {
         { role: "developer", content: "You are a helpful assistant." },
         { role: "user", content: combinedPrompt }
       ],
-      max_tokens: 700,
+      max_tokens: 1000,
     }));
 
     if (finalResponse.choices && finalResponse.choices.length > 0) {
