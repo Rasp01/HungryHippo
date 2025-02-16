@@ -69,17 +69,21 @@ document.addEventListener('DOMContentLoaded', () => {
     loadShoppingList();
   });
 
-  // Add event listener to the "Scrape Recipes" button
-  document.getElementById('scrape-recipes-button').addEventListener('click', () => {
-    fetch('/scrape-random-recipes')
-      .then(response => response.json())
-      .then(data => {
-        console.log(data); // Log the response to debug
-        loadRecipes(); // Refresh the navbar with the new recipes
-        return generateShoppingList(); // Generate and refresh the shopping list
-      })
-      .catch(error => {
-        console.error('Error scraping recipes:', error);
-      });
-  });
+// Add event listener to the "Scrape Recipes" button
+document.getElementById('scrape-recipes-button').addEventListener('click', async () => {
+  const loadingCircle = document.getElementById('loading-circle');
+  loadingCircle.style.display = 'flex';
+
+  try {
+    const response = await fetch('/scrape-random-recipes');
+    const data = await response.json();
+    console.log(data); // Log the response to debug
+    loadRecipes(); // Refresh the navbar with the new recipes
+    await generateShoppingList(); // Generate and refresh the shopping list
+  } catch (error) {
+    console.error('Error scraping recipes:', error);
+  } finally {
+    loadingCircle.style.display = 'none';
+  }
+});
 });
