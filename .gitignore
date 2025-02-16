@@ -1,3 +1,6 @@
 node_modules/*
 recipes/*
 HungaryHippoRecipies.csv
+scrapeText.js
+public/selectedRecipes.json
+public/shoppingList.html
