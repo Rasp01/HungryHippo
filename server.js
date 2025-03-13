@@ -20,6 +20,7 @@ app.get('/scrape-random-recipes', (req, res) => {
   console.log('Getting random recipes');
   const csvFilePath = path.join(__dirname, 'HungaryHippoRecipies.csv');
   const recipes = [];
+  const numRecipes = parseInt(req.query.numRecipes) || 3; // Default to 3 if not provided
 
   fs.createReadStream(csvFilePath)
     .pipe(csv())
@@ -32,7 +33,7 @@ app.get('/scrape-random-recipes', (req, res) => {
       const randomRecipes = [];
       const selectedIndices = new Set();
 
-      while (randomRecipes.length < 3 && selectedIndices.size < recipes.length) {
+      while (randomRecipes.length < numRecipes && selectedIndices.size < recipes.length) {
         const randomIndex = Math.floor(Math.random() * recipes.length);
         if (!selectedIndices.has(randomIndex)) {
           selectedIndices.add(randomIndex);

@@ -69,21 +69,33 @@ document.addEventListener('DOMContentLoaded', () => {
     loadShoppingList();
   });
 
-// Add event listener to the "Scrape Recipes" button
-document.getElementById('scrape-recipes-button').addEventListener('click', async () => {
-  const loadingCircle = document.getElementById('loading-circle');
-  loadingCircle.style.display = 'flex';
 
-  try {
-    const response = await fetch('/scrape-random-recipes');
-    const data = await response.json();
-    console.log(data); // Log the response to debug
-    loadRecipes(); // Refresh the navbar with the new recipes
-    await generateShoppingList(); // Generate and refresh the shopping list
-  } catch (error) {
-    console.error('Error scraping recipes:', error);
-  } finally {
-    loadingCircle.style.display = 'none';
-  }
-});
+  // Add event listener to the number of recipes range input
+  document.getElementById('numRecipesRange').addEventListener('input', function() {
+    document.getElementById('numRecipesValue').textContent = this.value;
+  });
+
+  // Add event listener to the confirm button in the modal
+  document.getElementById('confirmButton').addEventListener('click', function() {
+    const numRecipes = document.getElementById('numRecipesRange').value;
+    $('#recipeModal').modal('hide');
+    // Show loading spinner
+    document.getElementById('loading-circle').style.display = 'flex';
+    // Make the request to scrape random recipes
+    fetch(`/scrape-random-recipes?numRecipes=${numRecipes}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Recipes scraped:', data);
+        // Hide loading spinner
+        document.getElementById('loading-circle').style.display = 'none';
+        // Handle the response data as needed
+        loadRecipes(); // Refresh the navbar with the new recipes
+        generateShoppingList(); // Generate and refresh the shopping list
+      })
+      .catch(error => {
+        console.error('Error scraping recipes:', error);
+        // Hide loading spinner
+        document.getElementById('loading-circle').style.display = 'none';
+      });
+  });
 });

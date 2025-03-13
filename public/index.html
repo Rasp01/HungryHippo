@@ -140,10 +140,36 @@
       </div>
     </div>
   </div>
-  <button id="scrape-recipes-button" class="btn btn-primary fixed-button">Refresh Recipes</button>
+  <button id="scrape-recipes-button" class="btn btn-primary fixed-button" data-toggle="modal" data-target="#recipeModal">Refresh Recipes</button>
   <div id="loading-circle" class="loading-overlay" style="display: none;">
     <div class="loading-spinner"></div>
   </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="recipeModal" tabindex="-1" role="dialog" aria-labelledby="recipeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="recipeModalLabel">Select Number of Recipes</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="range" class="custom-range" id="numRecipesRange" min="1" max="5" step="1" value="3">
+          <p>Number of Recipes: <span id="numRecipesValue">3</span></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="confirmButton">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script src="recipeApp.js"></script>
 </body>
 </html>
