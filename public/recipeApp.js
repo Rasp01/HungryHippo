@@ -86,11 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(response => response.json())
       .then(data => {
         console.log('Recipes scraped:', data);
-        // Hide loading spinner
-        document.getElementById('loading-circle').style.display = 'none';
         // Handle the response data as needed
         loadRecipes(); // Refresh the navbar with the new recipes
         generateShoppingList(); // Generate and refresh the shopping list
+        // remove loading spinner once the recipes are loaded
+        // Hide loading spinner
+        document.getElementById('loading-circle').style.display = 'none';
       })
       .catch(error => {
         console.error('Error scraping recipes:', error);
