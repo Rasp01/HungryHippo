@@ -6,6 +6,7 @@ const csv = require('csv-parser');
 const app = express();
 app.use(express.static('public'));
 const { OpenAI } = require('openai');
+const dotenv = require('dotenv'); // Add this line to import dotenv
 dotenv.config(); // Load environment variables from .env file
 
 
