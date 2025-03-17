@@ -6,9 +6,14 @@ const csv = require('csv-parser');
 const app = express();
 app.use(express.static('public'));
 const { OpenAI } = require('openai');
+dotenv.config(); // Load environment variables from .env file
 
 
-const API_KEY = "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";
+const API_KEY = process.env.OPENAI_API_KEY;
+if (!API_KEY) {
+  console.error('OpenAI API key not found. Please set the OPENAI_API_KEY environment variable.');
+  process.exit(1);
+}
 
 const openai = new OpenAI({
   apiKey: API_KEY,
