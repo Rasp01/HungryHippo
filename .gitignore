@@ -4,3 +4,4 @@ public/shoppingList.html
 public/recipes/*
 *.png
 .env
+users/*
