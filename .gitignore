@@ -1,7 +1,6 @@
 node_modules/*
-HungaryHippoRecipies.csv
-scrapeText.js
 public/selectedRecipes.json
 public/shoppingList.html
 public/recipes/*
 *.png
+.env
