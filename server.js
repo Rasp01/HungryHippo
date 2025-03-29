@@ -9,33 +9,43 @@ const { OpenAI } = require('openai');
 const dotenv = require('dotenv'); // Add this line to import dotenv
 dotenv.config(); // Load environment variables from .env file
 
+// Endpoint to fetch available users
+app.get('/get-users', (req, res) => {
+  const usersDir = path.join(__dirname, 'users');
+  if (!fs.existsSync(usersDir)) {
+    return res.status(404).json({ error: 'Users directory not found' });
+  }
 
-const API_KEY = process.env.OPENAI_API_KEY;
-if (!API_KEY) {
-  console.error('OpenAI API key not found. Please set the OPENAI_API_KEY environment variable.');
-  process.exit(1);
-}
-
-const openai = new OpenAI({
-  apiKey: API_KEY,
+  const userFiles = fs.readdirSync(usersDir).filter(file => file.endsWith('.csv'));
+  const users = userFiles.map(file => path.basename(file, '.csv')); // Extract usernames from filenames
+  res.json(users);
 });
 
 let recipesData = {};
 
-app.get('/scrape-random-recipes', (req, res) => {
+app.get('/load-user-recipes', (req, res) => {
   console.log('Getting random recipes');
-  const csvFilePath = path.join(__dirname, 'HungaryHippoRecipies.csv');
+  const username = req.query.username;
+  if (!username) {
+    return res.status(400).json({ error: 'Username is required' });
+  }
+
+  const userCsvPath = path.join(__dirname, 'users', `${username}.csv`);
+  if (!fs.existsSync(userCsvPath)) {
+    return res.status(404).json({ error: `No recipe file found for user: ${username}` });
+  }
+
   const recipes = [];
   const numRecipes = parseInt(req.query.numRecipes) || 3; // Default to 3 if not provided
 
-  fs.createReadStream(csvFilePath)
+  fs.createReadStream(userCsvPath)
     .pipe(csv())
     .on('data', (row) => {
       recipes.push(row);
     })
     .on('end', () => {
       console.log('Finished reading CSV file.');
-      // Select three random recipes
+      // Select random recipes
       const randomRecipes = [];
       const selectedIndices = new Set();
 
@@ -88,7 +98,12 @@ app.get('/scrape-random-recipes', (req, res) => {
 
 app.get('/get-recipes', (req, res) => {
   console.log('Fetching recipes');
-  const selectedRecipesPath = path.join(__dirname, 'public', 'selectedRecipes.json');
+  const username = req.query.username;
+  if (!username) {
+    return res.status(400).json({ error: 'Username is required' });
+  }
+
+  const selectedRecipesPath = path.join(__dirname, 'users', `${username}.json`);
   if (fs.existsSync(selectedRecipesPath)) {
     const recipesData = JSON.parse(fs.readFileSync(selectedRecipesPath, 'utf-8'));
     res.json(recipesData);
@@ -99,7 +114,12 @@ app.get('/get-recipes', (req, res) => {
 
 app.get('/recipes/:recipe', (req, res) => {
   console.log('Fetching recipe:', req.params.recipe);
-  const selectedRecipesPath = path.join(__dirname, 'public', 'selectedRecipes.json');
+  const username = req.query.username;
+  if (!username) {
+    return res.status(400).json({ error: 'Username is required' });
+  }
+
+  const selectedRecipesPath = path.join(__dirname, 'users', `${username}.json`);
   if (fs.existsSync(selectedRecipesPath)) {
     const recipesData = JSON.parse(fs.readFileSync(selectedRecipesPath, 'utf-8'));
     const recipeName = req.params.recipe;
@@ -113,6 +133,18 @@ app.get('/recipes/:recipe', (req, res) => {
     res.status(404).send('No recipes found');
   }
 });
+
+
+const API_KEY = process.env.OPENAI_API_KEY;
+if (!API_KEY) {
+  console.error('OpenAI API key not found. Please set the OPENAI_API_KEY environment variable.');
+  process.exit(1);
+}
+
+const openai = new OpenAI({
+  apiKey: API_KEY,
+});
+
 
 app.get('/generate-shopping-list', async (req, res) => {
   try {

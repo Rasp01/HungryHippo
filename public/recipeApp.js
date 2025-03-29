@@ -1,4 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const userDropdown = document.getElementById('user-dropdown');
+  const loadUserButton = document.getElementById('load-user-button');
+
+  // Fetch and populate the user dropdown
+  const loadUsers = () => {
+    fetch('/get-users')
+      .then(response => response.json())
+      .then(users => {
+        users.forEach(user => {
+          const option = document.createElement('option');
+          option.value = user;
+          option.textContent = user;
+          userDropdown.appendChild(option);
+        });
+      })
+      .catch(error => console.error('Error fetching users:', error));
+  };
+
+  // Preload the users recipes if exist when the page loads
   const loadShoppingList = () => {
     fetch('/shoppingList.html')
       .then(response => {
@@ -18,14 +37,21 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   };
 
-  const loadRecipes = () => {
-    fetch('/get-recipes')
+  const loadUserRecipes = () => {
+    const selectedUser = userDropdown.value;
+    if (!selectedUser) {
+      alert('Please select a user.');
+      return;
+    }
+
+    fetch(`/get-recipes?username=${selectedUser}`)
       .then(response => response.json())
       .then(recipes => {
-        console.log(recipes); // Log the recipes to debug
+        console.log('Loaded recipes for user:', selectedUser, recipes);
         const recipeLinksContainer = document.getElementById('recipe-links');
         const fragment = document.createDocumentFragment();
         Object.keys(recipes).forEach(recipeName => {
+          console.log('Recipe name:', recipeName, 'URL:', recipes[recipeName]);
           const listItem = document.createElement('li');
           listItem.className = 'nav-item';
           const link = document.createElement('a');
@@ -59,8 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   };
 
+  // Event listeners
+  loadUserButton.addEventListener('click', loadUserRecipes);
+
+  // Initialize
   // Load the shopping list and recipes in parallel
-  Promise.all([loadShoppingList(), loadRecipes()]);
+  Promise.all([loadShoppingList(), loadUsers()]);
+
 
   // Add event listener to the "Hungary Hippo" title
   document.querySelector('.navbar-brand').addEventListener('click', (event) => {
@@ -77,17 +108,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Add event listener to the confirm button in the modal
   document.getElementById('confirmButton').addEventListener('click', function() {
+    const selectedUser = userDropdown.value;
+    if (!selectedUser) {
+      alert('Please select a user.');
+      return;
+    }
+
     const numRecipes = document.getElementById('numRecipesRange').value;
     $('#recipeModal').modal('hide');
     // Show loading spinner
     document.getElementById('loading-circle').style.display = 'flex';
     // Make the request to scrape random recipes
-    fetch(`/scrape-random-recipes?numRecipes=${numRecipes}`)
+    fetch(`/load-user-recipes?username=${selectedUser}&numRecipes=${numRecipes}`)
       .then(response => response.json())
       .then(data => {
-        console.log('Recipes scraped:', data);
+        console.log('Recipes found:', data);
         // Handle the response data as needed
-        loadRecipes(); // Refresh the navbar with the new recipes
+        loadUserRecipes(); // Refresh the navbar with the new recipes
         generateShoppingList(); // Generate and refresh the shopping list
         // remove loading spinner once the recipes are loaded
         // Hide loading spinner
