@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Fetch and populate the user dropdown
   const loadUsersForModal = () => {
-    fetch('/get-users')
+    return fetch('/get-users') // Return the fetch promise
       .then(response => response.json())
       .then(users => {
         users.forEach(user => {
@@ -14,26 +14,34 @@ document.addEventListener('DOMContentLoaded', () => {
           userDropdownModal.appendChild(option);
         });
       })
-      .catch(error => console.error('Error fetching users:', error));
+      .catch(error => {
+        console.error('Error fetching users:', error);
+        throw error; // Re-throw the error to propagate it to the caller
+      });
   };
 
-  // Preload the users recipes if exist when the page loads
   const loadShoppingList = () => {
-    fetch('/shoppingList.html')
+    const selectedUser = userDropdownModal.value;
+    if (!selectedUser) {
+      console.error('No user selected. Cannot load shopping list.');
+      return;
+    }
+  
+    fetch(`/users/${selectedUser}/shoppingList.html`)
       .then(response => {
         if (!response.ok) {
-          throw new Error('No shopping list available');
+          throw new Error('No shopping list available for the selected user');
         }
         return response.text();
       })
       .then(data => {
-        console.log(data); // Log the shopping list to debug
+        console.log('Loaded shopping list:', data); // Log the shopping list to debug
         document.getElementById('shopping-list').innerHTML = data;
         document.getElementById('shopping-list-content').style.display = 'flex';
       })
       .catch(error => {
         console.error('Error loading shopping list:', error.message);
-        console.log('No shopping list available');
+        console.log('No shopping list available for the selected user');
       });
   };
 
@@ -81,7 +89,13 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const generateShoppingList = () => {
-    return fetch('/generate-shopping-list')
+    const selectedUser = userDropdownModal.value;
+    if (!selectedUser) {
+      alert('Please select a user.');
+      return;
+    }
+
+    return fetch(`/generate-shopping-list?username=${selectedUser}`)
       .then(response => response.json())
       .then(data => {
         console.log(data); // Log the response to debug
@@ -107,17 +121,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load the user's recipes
     loadUserRecipes();
 
+    // Load the shopping list for the selected user
+    loadShoppingList();
+
     // Hide the modal
     $('#userSelectionModal').modal('hide');
-  });
+    });
 
   // Show the modal on page load
   $('#userSelectionModal').modal('show');
 
   // Initialize
-  // Load the shopping list and recipes in parallel
-  Promise.all([loadShoppingList(), loadUsersForModal()]);
-
+  loadUsersForModal()
 
   // Add event listener to the "Hungary Hippo" title
   document.querySelector('.navbar-brand').addEventListener('click', (event) => {
