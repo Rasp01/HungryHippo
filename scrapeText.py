@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import time
+import sys
 
 class HtmlTextExtractor:
     def __init__(self, recipes):
@@ -52,14 +53,23 @@ class HtmlTextExtractor:
                 file.write(text)
 
 # Example usage
-if __name__ == "__main__": 
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Error: Username argument is required.")
+        sys.exit(1)
+
+    username = sys.argv[1]  # Get the username from the command-line arguments
+    recipes_file_path = os.path.join('users', f'{username}.json')
+
+    if not os.path.exists(recipes_file_path):
+        print(f"Error: Recipes file for user '{username}' not found.")
+        sys.exit(1)
 
     start_time = time.time()  # Record the start time
 
-    with open(os.path.join('public', 'selectedRecipes.json'), 'r', encoding='utf-8') as f:
+    with open(recipes_file_path, 'r', encoding='utf-8') as f:
         recipes = json.load(f)
-        print(recipes)
-
+        print(f"Loaded recipes for user '{username}':", recipes)
 
     extractor = HtmlTextExtractor(recipes)
     extractor.fetch_html()
@@ -68,5 +78,5 @@ if __name__ == "__main__":
     extractor.save_texts('public/recipes')
 
     end_time = time.time()  # Record the end time
-    runtime = end_time - start_time  # Calculate  the runtime
+    runtime = end_time - start_time  # Calculate the runtime
     print(f"Runtime of the program is {runtime:.2f} seconds")  # Print the runtime
