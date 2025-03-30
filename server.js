@@ -68,14 +68,14 @@ app.get('/load-user-recipes', (req, res) => {
       console.log('Recipes data:', recipesData);
 
       // Write the selected recipes to selectedRecipes.json in the public directory
-      const selectedRecipesPath = path.join(__dirname, 'public', 'selectedRecipes.json');
+      const selectedRecipesPath = path.join(__dirname, 'users', `${username}.json`);
       fs.writeFileSync(selectedRecipesPath, JSON.stringify(recipesData, null, 2), 'utf-8');
 
       console.log('Running Python script to process the selected recipes...');
       // Run the Python script to process the selected recipes
       const pythonExecutable = 'C:/Users/raffy/anaconda3/envs/spareroomScraping/python.exe'; // Update this path as needed
       const pythonScriptPath = path.join(__dirname, 'scrapeText.py');
-      const command = `${pythonExecutable} ${pythonScriptPath}`;
+      const command = `${pythonExecutable} ${pythonScriptPath} ${username}`;
 
       exec(command, (error, stdout, stderr) => {
         if (error) {
