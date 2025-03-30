@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const userDropdown = document.getElementById('user-dropdown');
-  const loadUserButton = document.getElementById('load-user-button');
+  const userDropdownModal = document.getElementById('user-dropdown-modal');
+  const loadUserButton = document.getElementById('confirmUserButton');
 
   // Fetch and populate the user dropdown
-  const loadUsers = () => {
+  const loadUsersForModal = () => {
     fetch('/get-users')
       .then(response => response.json())
       .then(users => {
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const option = document.createElement('option');
           option.value = user;
           option.textContent = user;
-          userDropdown.appendChild(option);
+          userDropdownModal.appendChild(option);
         });
       })
       .catch(error => console.error('Error fetching users:', error));
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const loadUserRecipes = () => {
-    const selectedUser = userDropdown.value;
+    const selectedUser = userDropdownModal.value;
     if (!selectedUser) {
       alert('Please select a user.');
       return;
@@ -85,12 +85,31 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   };
 
-  // Event listeners
-  loadUserButton.addEventListener('click', loadUserRecipes);
+  // Handle user selection confirmation
+  confirmUserButton.addEventListener('click', () => {
+    const selectedUser = userDropdownModal.value;
+    if (!selectedUser) {
+      alert('Please select a user.');
+      return;
+    }
+
+    // Set the selected user in the main dropdown
+    const userDropdown = document.getElementById('user-dropdown-modal');
+    userDropdown.value = selectedUser;
+
+    // Load the user's recipes
+    loadUserRecipes();
+
+    // Hide the modal
+    $('#userSelectionModal').modal('hide');
+  });
+
+  // Show the modal on page load
+  $('#userSelectionModal').modal('show');
 
   // Initialize
   // Load the shopping list and recipes in parallel
-  Promise.all([loadShoppingList(), loadUsers()]);
+  Promise.all([loadShoppingList(), loadUsersForModal()]);
 
 
   // Add event listener to the "Hungary Hippo" title
@@ -108,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Add event listener to the confirm button in the modal
   document.getElementById('confirmButton').addEventListener('click', function() {
+    const userDropdown = document.getElementById('user-dropdown-modal');
     const selectedUser = userDropdown.value;
     if (!selectedUser) {
       alert('Please select a user.');
