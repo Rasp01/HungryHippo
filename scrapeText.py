@@ -59,10 +59,10 @@ if __name__ == "__main__":
         sys.exit(1)
 
     username = sys.argv[1]  # Get the username from the command-line arguments
-    recipes_file_path = os.path.join('users', f'{username}.json')
+    recipes_file_path = os.path.join('users',username,'SelectedRecipes.json')
 
     if not os.path.exists(recipes_file_path):
-        print(f"Error: Recipes file for user '{username}' not found.")
+        print(f"Error: Selected Recipes file for user '{username}' not found.")
         sys.exit(1)
 
     start_time = time.time()  # Record the start time
