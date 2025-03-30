@@ -9,6 +9,10 @@ const { OpenAI } = require('openai');
 const dotenv = require('dotenv'); // Add this line to import dotenv
 dotenv.config(); // Load environment variables from .env file
 
+// Serve the users folder
+const usersDir = path.join(__dirname, 'users');
+app.use('/users', express.static(usersDir));
+
 // Endpoint to fetch available users
 app.get('/get-users', (req, res) => {
   const usersDir = path.join(__dirname, 'users');
@@ -16,9 +20,12 @@ app.get('/get-users', (req, res) => {
     return res.status(404).json({ error: 'Users directory not found' });
   }
 
-  const userFiles = fs.readdirSync(usersDir).filter(file => file.endsWith('.csv'));
-  const users = userFiles.map(file => path.basename(file, '.csv')); // Extract usernames from filenames
-  res.json(users);
+  // Get folder names in the users directory
+  const userFolders = fs.readdirSync(usersDir, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory()) // Only include directories
+    .map(dirent => dirent.name); // Extract folder names
+
+  res.json(userFolders);
 });
 
 let recipesData = {};
@@ -30,7 +37,7 @@ app.get('/load-user-recipes', (req, res) => {
     return res.status(400).json({ error: 'Username is required' });
   }
 
-  const userCsvPath = path.join(__dirname, 'users', `${username}.csv`);
+  const userCsvPath = path.join(__dirname, 'users',username, `Recipes.csv`);
   if (!fs.existsSync(userCsvPath)) {
     return res.status(404).json({ error: `No recipe file found for user: ${username}` });
   }
@@ -68,7 +75,7 @@ app.get('/load-user-recipes', (req, res) => {
       console.log('Recipes data:', recipesData);
 
       // Write the selected recipes to selectedRecipes.json in the public directory
-      const selectedRecipesPath = path.join(__dirname, 'users', `${username}.json`);
+      const selectedRecipesPath = path.join(__dirname, 'users',username, `SelectedRecipes.json`);
       fs.writeFileSync(selectedRecipesPath, JSON.stringify(recipesData, null, 2), 'utf-8');
 
       console.log('Running Python script to process the selected recipes...');
@@ -103,7 +110,7 @@ app.get('/get-recipes', (req, res) => {
     return res.status(400).json({ error: 'Username is required' });
   }
 
-  const selectedRecipesPath = path.join(__dirname, 'users', `${username}.json`);
+  const selectedRecipesPath = path.join(__dirname, 'users',username, `SelectedRecipes.json`);
   if (fs.existsSync(selectedRecipesPath)) {
     const recipesData = JSON.parse(fs.readFileSync(selectedRecipesPath, 'utf-8'));
     res.json(recipesData);
@@ -119,7 +126,7 @@ app.get('/recipes/:recipe', (req, res) => {
     return res.status(400).json({ error: 'Username is required' });
   }
 
-  const selectedRecipesPath = path.join(__dirname, 'users', `${username}.json`);
+  const selectedRecipesPath = path.join(__dirname, 'users',username, `SelectedRecipes.json`);
   if (fs.existsSync(selectedRecipesPath)) {
     const recipesData = JSON.parse(fs.readFileSync(selectedRecipesPath, 'utf-8'));
     const recipeName = req.params.recipe;
@@ -148,6 +155,10 @@ const openai = new OpenAI({
 
 app.get('/generate-shopping-list', async (req, res) => {
   try {
+    const username = req.query.username;
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
+    }
     const recipesDir = path.join(__dirname, 'public', 'recipes');
     const recipeFiles = fs.readdirSync(recipesDir);
     const recipeContents = recipeFiles.map(file => {
@@ -211,7 +222,12 @@ app.get('/generate-shopping-list', async (req, res) => {
       console.log('Final response:', finalResponse.choices[0].message.content);
       const htmlContent = finalResponse.choices[0].message.content.match(/```html([\s\S]*?)```/);
       if (htmlContent) {
-        const shoppingListPath = path.join(__dirname, 'public', 'shoppingList.html');
+        // Save the shopping list to the user's folder
+        const userFolder = path.join(__dirname, 'users', username);
+        const shoppingListPath = path.join(userFolder, 'shoppingList.html');
+        if (!fs.existsSync(userFolder)) {
+          fs.mkdirSync(userFolder, { recursive: true });
+        }        
         fs.writeFileSync(shoppingListPath, htmlContent[0], 'utf-8');
         res.json({ shoppingList: htmlContent[0] });
       } else {
