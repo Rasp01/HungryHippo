@@ -42,6 +42,10 @@
       background-color: rgba(165, 42, 42, 0.20); /* Brown with 50% transparency */
       background-image: url('herbs-spices.png'); /* Replace with actual local image file */
     }
+    .other {
+      background-color: rgba(255, 0, 0, 0.20); /* Red with 50% transparency */
+      /* background-image: url('other.png'); Replace with actual local image file */
+    }
     .loading-overlay {
       position: fixed; /* Stay in place */
       top: 0;
@@ -81,13 +85,24 @@
       </ul>
     </div>
   </nav>
-
-  <div id="user-selection" class="container mt-4">
-    <h2>Select a User</h2>
-    <select id="user-dropdown" class="form-control mb-3">
-      <option value="" disabled selected>Select a user</option>
-    </select>
-    <button id="load-user-button" class="btn btn-primary">Load Recipes</button>
+  
+  <!-- User Selection Modal -->
+  <div class="modal fade" id="userSelectionModal" tabindex="-1" role="dialog" aria-labelledby="userSelectionModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="userSelectionModalLabel">Select a User</h5>
+        </div>
+        <div class="modal-body">
+          <select id="user-dropdown-modal" class="form-control mb-3">
+            <option value="" disabled selected>Select a user</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="confirmUserButton">Confirm</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="container-fluid mt-4">
