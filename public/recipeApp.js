@@ -45,7 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     fetch(`/get-recipes?username=${selectedUser}`)
-      .then(response => response.json())
+      .then(response => {
+        if (response.status === 404) {
+          console.log('No pre-selected recipes found for the selected user.');
+          // Open the "Refresh Recipes" modal
+          $('#recipeModal').modal('show');
+        }
+        return response.json();
+      })
       .then(recipes => {
         console.log('Loaded recipes for user:', selectedUser, recipes);
         const recipeLinksContainer = document.getElementById('recipe-links');
