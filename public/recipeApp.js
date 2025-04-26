@@ -1,6 +1,47 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const addUserForm = document.getElementById('add-user-form');
   const userDropdownModal = document.getElementById('user-dropdown-modal');
   const loadUserButton = document.getElementById('confirmUserButton');
+
+  // Handle new user form submission
+  addUserForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const userName = document.getElementById('new-user-name').value.trim();
+    const userFile = document.getElementById('user-file').files[0];
+
+    if (!userName || !userFile) {
+      alert('Please provide a user name and a file.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('userName', userName);
+    formData.append('userFile', userFile);
+
+    fetch('/add-user', {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to add user');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        alert('User added successfully!');
+        const option = document.createElement('option');
+        option.value = data.userName;
+        option.textContent = data.userName;
+        userDropdownModal.appendChild(option);
+        addUserForm.reset();
+      })
+      .catch((error) => {
+        console.error('Error adding user:', error);
+        alert('Error adding user. Please try again.');
+      });
+  });
 
   // Fetch and populate the user dropdown
   const loadUsersForModal = () => {
