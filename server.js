@@ -7,7 +7,35 @@ const app = express();
 app.use(express.static('public'));
 const { OpenAI } = require('openai');
 const dotenv = require('dotenv'); // Add this line to import dotenv
+const multer = require('multer');
 dotenv.config(); // Load environment variables from .env file
+
+// Configure multer for file uploads
+const upload = multer({ dest: 'uploads/' });
+
+app.post('/add-user', upload.single('userFile'), (req, res) => {
+  const userName = req.body.userName;
+  const userFile = req.file;
+
+  if (!userName || !userFile) {
+    return res.status(400).json({ error: 'User name and file are required' });
+  }
+
+  const userFolder = path.join(__dirname, 'users', userName);
+
+  if (fs.existsSync(userFolder)) {
+    return res.status(400).json({ error: 'User already exists' });
+  }
+
+  // Create the user folder
+  fs.mkdirSync(userFolder, { recursive: true });
+
+  // Move the uploaded file to the user's folder
+  const userFilePath = path.join(userFolder, userFile.originalname);
+  fs.renameSync(userFile.path, userFilePath);
+
+  res.json({ userName });
+});
 
 // Serve the users folder
 const usersDir = path.join(__dirname, 'users');
