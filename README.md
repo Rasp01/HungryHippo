@@ -9,24 +9,6 @@ HungryHippo is a web application that helps you get recipes for good food withou
 - Generate a comprehensive shopping list for selected recipes
 - Reset recipes and regenerate the shopping list
 
-## Project Structure
-
-.
-├── .gitignore  
-├── HungryHippoRecipies.csv  
-├── package.json  
-├── public/  
-│   ├── homepage.html  
-│   ├── index.html  
-│   ├── recipeApp.js  
-│   ├── recipes/  
-│   ├── selectedRecipes.json  
-│   ├── shoppingList.html  
-├── README.md  
-├── scrapeText.py  
-├── server.js  
-├── style.css  
-
 ## Prerequisites
 
 Before running this application, ensure you have the following installed on your system:
