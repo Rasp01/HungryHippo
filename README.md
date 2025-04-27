@@ -1,5 +1,5 @@
 
-![HungryHippo Logo](HHWebsite.png)
+![HungryHippo Logo](public/HHWebsite.png)
 
 # HungryHippo
 
