@@ -1,3 +1,6 @@
+
+![HungryHippo Logo](HHWebsite.png)
+
 # HungryHippo
 
 HungryHippo is a web application that helps you get recipes for good food without having to make any decisions. It lets you choose how many recipes you want, generates a shopping list, and displays the recipes in an easy-to-use interface.

@@ -2,7 +2,6 @@ node_modules/*
 public/selectedRecipes.json
 public/shoppingList.html
 public/recipes/*
-*.png
 .env
 users/*
 package-lock.json
