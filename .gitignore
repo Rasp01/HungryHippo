@@ -5,3 +5,5 @@ public/recipes/*
 *.png
 .env
 users/*
+package-lock.json
+package.json
