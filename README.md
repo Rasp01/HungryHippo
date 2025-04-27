@@ -1,32 +1,42 @@
 # HungryHippo
 
-HungryHippo is a web application that helps you get recipes for good food without having to make any decisions. It scrapes random recipes, generates a shopping list, and displays the recipes in an easy-to-use interface.
+HungryHippo is a web application that helps you get recipes for good food without having to make any decisions. It lets you choose how many recipes you want, generates a shopping list, and displays the recipes in an easy-to-use interface.
 
 ## Features
 
-- Scrape random recipes from a CSV file
+- Select random recipes from a users CSV file
 - Display recipes in a navigable list
 - Generate a comprehensive shopping list for selected recipes
-- View recipes in an embedded iframe
 - Reset recipes and regenerate the shopping list
 
 ## Project Structure
 
 .
-├── .gitignore
-├── HungaryHippoRecipies.csv
-├── package.json
-├── public/
-│   ├── homepage.html
-│   ├── index.html
-│   ├── recipeApp.js
-│   ├── recipes/
-│   ├── selectedRecipes.json
-│   ├── shoppingList.html
-├── README.md
-├── scrapeText.py
-├── server.js
-├── style.css
+├── .gitignore  
+├── HungryHippoRecipies.csv  
+├── package.json  
+├── public/  
+│   ├── homepage.html  
+│   ├── index.html  
+│   ├── recipeApp.js  
+│   ├── recipes/  
+│   ├── selectedRecipes.json  
+│   ├── shoppingList.html  
+├── README.md  
+├── scrapeText.py  
+├── server.js  
+├── style.css  
+
+## Prerequisites
+
+Before running this application, ensure you have the following installed on your system:
+
+1. **Anaconda**: Used to manage the Conda environment.
+   - [Download Anaconda](https://www.anaconda.com/products/distribution)
+2. **Python**: Required for running the python scripts.
+   - [Download Python](https://www.python.org/downloads/)
+3. **Node.js and npm**: Required for running the server and managing dependencies.
+   - [Download Node.js](https://nodejs.org/)
 
 ## Installation
 
@@ -34,28 +44,45 @@ HungryHippo is a web application that helps you get recipes for good food withou
    ```sh
    git clone https://github.com/Rasp01/HungryHippo.git
    cd HungryHippo
+   ```
 
-2. Install depedancies:
-    npm install
+2. Run the setup script:
+   ```sh
+   setup.bat
+   ```
 
-3. Start the server:
-    npm start
+   This script will:
+   - Check for Node.js and npm installation.
+   - Install all required Node.js dependencies.
+   - Set up the Conda environment using `environment.yml`.
+   - Create necessary directories.
+   - Start the server.
+
+3. Open your browser and navigate to:
+   ```
+   http://localhost:3000
+   ```
 
 ## Usage
 
-1. Open your browser and navigate to http://localhost:3000.
+1. The application will automatically load the shopping list and display it.
 
-2. The application will automatically load the shopping list and display it.
+2. Click on any recipe link in the navigation bar to view the recipe.
 
-3. Click on any recipe link in the navigation bar to view the recipe.
-
-4. Click the "Reset Recipes" button to scrape new random recipes and regenerate the shopping list.
+3. Click the "Reset Recipes" button to scrape new random recipes and regenerate the shopping list.
 
 ## API Endpoints
-- GET /scrape-random-recipes: Scrape random recipes from the CSV file and store them in selectedRecipes.json.
+
+- POST /add-user: Takes user name and csv file and creates a new user profile with the name of the user
+- GET /load-user-recipes: Takes as input a number which will be used to deteremine the number of random recipes from the users CSV file and store them in `selectedRecipes.json`.
 - GET /get-recipes: Fetch the list of selected recipes.
 - GET /recipes/:recipe: Fetch the URL of a specific recipe.
 - GET /generate-shopping-list: Generate a comprehensive shopping list for the selected recipes.
+
+
+## Disclaimer
+
+This project includes code that scrapes content from websites using the `scrapeText.py` script. Please ensure that the websites you include in your recipes allow web scraping and comply with their terms of service. Unauthorized scraping may violate website policies or legal regulations.
 
 ## License
 
@@ -75,4 +102,4 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 
 ## Contact
 
-For any questions or inquiries, please contact the project maintainer at [your-email@example.com].
+For any questions or inquiries, please contact the project maintainer at raffy.sprent@gmail.com.
