@@ -37,6 +37,12 @@ Before running this application, ensure you have the following installed on your
    - [Download Python](https://www.python.org/downloads/)
 3. **Node.js and npm**: Required for running the server and managing dependencies.
    - [Download Node.js](https://nodejs.org/)
+4. **OpenAI API Key**: Required for generating shopping lists using OpenAI's API.
+   - Obtain an API key from [OpenAI](https://platform.openai.com/signup/).
+   - Populate the `.env` file in the root of the repository with your API key:
+     ```properties
+     OPENAI_API_KEY=your_openai_api_key_here
+     ```
 
 ## Installation
 
